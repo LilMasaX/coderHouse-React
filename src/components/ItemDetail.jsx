@@ -1,8 +1,14 @@
+import { useState } from 'react';
 import ItemCount from './ItemCount';
+import { useCart } from '../context/CartContext';
 
 const ItemDetail = ({ product }) => {
+  const { addToCart } = useCart();
+  const [addedToCart, setAddedToCart] = useState(false);
+
   const handleAddToCart = (quantity) => {
-    alert(`Se agregaron ${quantity} unidades de ${product.name} al carrito`);
+    addToCart(product, quantity);
+    setAddedToCart(true);
   };
 
   return (
@@ -20,10 +26,22 @@ const ItemDetail = ({ product }) => {
         <p className="detail-description">{product.description}</p>
         <p className="detail-stock">Stock disponible: {product.stock}</p>
         
-        <ItemCount 
-          stock={product.stock} 
-          onAdd={handleAddToCart}
-        />
+        {!addedToCart ? (
+          <ItemCount 
+            stock={product.stock} 
+            onAdd={handleAddToCart}
+          />
+        ) : (
+          <div className="added-to-cart-message">
+            <p>¡Producto agregado al carrito!</p>
+            <button 
+              onClick={() => setAddedToCart(false)}
+              className="btn-secondary"
+            >
+              Agregar más
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

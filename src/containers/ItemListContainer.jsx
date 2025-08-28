@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getProducts } from '../data/products';
+import { getProducts, getProductsByCategory } from '../services/firebaseService';
 import Item from '../components/Item';
 
 const ItemListContainer = () => {
@@ -13,15 +13,23 @@ const ItemListContainer = () => {
     setLoading(true);
     setError(null);
     
-    getProducts(categoryId)
-      .then((data) => {
+    const fetchProducts = async () => {
+      try {
+        let data;
+        if (categoryId) {
+          data = await getProductsByCategory(categoryId);
+        } else {
+          data = await getProducts();
+        }
         setProducts(data);
         setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         setError(err.message);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchProducts();
   }, [categoryId]);
 
   if (loading) {
